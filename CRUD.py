@@ -91,18 +91,19 @@ def adicionar_registro(
         "MES": MES,
         "OCORRENCIA": OCORRENCIA,
         "ANO_DA_OCORRENCIA": ANO_DA_OCORRENCIA,
-        "DATA_OCORRENCIA": DATA_OCORRENCIA,
+        "DATA_OCORRENCIA": DATA_OCORRENCIA.isoformat() if DATA_OCORRENCIA else None,
         "VELOCIDADE": VELOCIDADE,
         "STATUS": STATUS,
-        "DATA_TRATATIVA": DATA_TRATATIVA,
+        "DATA_TRATATIVA": DATA_TRATATIVA.isoformat() if DATA_TRATATIVA else None,
         "DOCUMENTO": DOCUMENTO,
         "JUSTIFICATIVA": JUSTIFICATIVA,
         "PERCENTUAL": PERCENTUAL,
         "FEZ_TREINAMENTO": FEZ_TREINAMENTO,
-        "DATA_TREINAMENTO": DATA_TREINAMENTO
+        "DATA_TREINAMENTO": DATA_TREINAMENTO.isoformat() if DATA_TREINAMENTO else None
     }).execute()
 
     st.success("✅ Registro adicionado com sucesso!")
+
 
 
 def FROTA_EXISTE(FROTA):
