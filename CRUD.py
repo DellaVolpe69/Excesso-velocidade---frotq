@@ -11,7 +11,9 @@ import requests
 
 
 # --- LINK DIRETO DA IMAGEM NO GITHUB ---
-url_imagem = "https://raw.githubusercontent.com/DellaVolpe69/Images/main/AppBackground02.png"
+url_imagem = (
+    "https://raw.githubusercontent.com/DellaVolpe69/Images/main/AppBackground02.png"
+)
 url_logo = "https://raw.githubusercontent.com/DellaVolpe69/Images/main/DellaVolpeLogoBranco.png"
 fox_image = "https://raw.githubusercontent.com/DellaVolpe69/Images/main/Foxy4.png"
 
@@ -24,7 +26,7 @@ st.markdown(
     }}
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
@@ -33,30 +35,40 @@ modulos_dir = Path(__file__).parent / "Modulos"
 # Se o diretório ainda não existir, faz o clone direto do GitHub
 if not modulos_dir.exists():
     print("📥 Clonando repositório Modulos do GitHub...")
-    subprocess.run([
-        "git", "clone",
-        "https://github.com/DellaVolpe69/Modulos.git",
-        str(modulos_dir)
-    ], check=True)
+    subprocess.run(
+        [
+            "git",
+            "clone",
+            "https://github.com/DellaVolpe69/Modulos.git",
+            str(modulos_dir),
+        ],
+        check=True,
+    )
 
 # Garante que o diretório está no caminho de importação
 if str(modulos_dir) not in sys.path:
     sys.path.insert(0, str(modulos_dir))
 
 # Agora importa o módulo normalmente
-# from Modulos import AzureLogin 
+# from Modulos import AzureLogin
 from Modulos import ConectionSupaBase
+
 ###################################
-# from Modulos.Minio.examples.MinIO import read_file  # ajuste o caminho se necessário 
+# from Modulos.Minio.examples.MinIO import read_file  # ajuste o caminho se necessário
 
 
 # ---------------------------------------------------
 # IMPORTA CONEXÃO SUPABASE
 # ---------------------------------------------------
-sys.path.append(PureWindowsPath(r'\\tableau\Central_de_Performance\BI\Cloud\Scripts\Modulos').as_posix())
+sys.path.append(
+    PureWindowsPath(
+        r"\\tableau\Central_de_Performance\BI\Cloud\Scripts\Modulos"
+    ).as_posix()
+)
 import ConectionSupaBase
 
 supabase = ConectionSupaBase.conexao()
+
 
 # ---------------------------------------------------
 # FUNÇÕES DE BANCO
@@ -64,6 +76,7 @@ supabase = ConectionSupaBase.conexao()
 def carregar_dados():
     data = supabase.table("EXCESSO VELOCIDADE - FROTA").select("*").execute()
     return pd.DataFrame(data.data)
+
 
 def adicionar_registro(
     OPERACAO,
@@ -81,44 +94,52 @@ def adicionar_registro(
     JUSTIFICATIVA,
     PERCENTUAL,
     FEZ_TREINAMENTO,
-    DATA_TREINAMENTO
+    DATA_TREINAMENTO,
 ):
-    supabase.table("EXCESSO VELOCIDADE - FROTA").insert({
-        "OPERACAO": OPERACAO,
-        "FROTA": FROTA,
-        "MATRICULA": MATRICULA,
-        "NOME_MOTORISTA": NOME_MOTORISTA,
-        "MES": MES,
-        "OCORRENCIA": OCORRENCIA,
-        "ANO_DA_OCORRENCIA": ANO_DA_OCORRENCIA,
-        "DATA_OCORRENCIA": DATA_OCORRENCIA.isoformat() if DATA_OCORRENCIA else None,
-        "VELOCIDADE": VELOCIDADE,
-        "STATUS": STATUS,
-        "DATA_TRATATIVA": DATA_TRATATIVA.isoformat() if DATA_TRATATIVA else None,
-        "DOCUMENTO": DOCUMENTO,
-        "JUSTIFICATIVA": JUSTIFICATIVA,
-        "PERCENTUAL": PERCENTUAL,
-        "FEZ_TREINAMENTO": FEZ_TREINAMENTO,
-        "DATA_TREINAMENTO": DATA_TREINAMENTO.isoformat() if DATA_TREINAMENTO else None
-    }).execute()
+    supabase.table("EXCESSO VELOCIDADE - FROTA").insert(
+        {
+            "OPERACAO": OPERACAO,
+            "FROTA": FROTA,
+            "MATRICULA": MATRICULA,
+            "NOME_MOTORISTA": NOME_MOTORISTA,
+            "MES": MES,
+            "OCORRENCIA": OCORRENCIA,
+            "ANO_DA_OCORRENCIA": ANO_DA_OCORRENCIA,
+            "DATA_OCORRENCIA": DATA_OCORRENCIA.isoformat() if DATA_OCORRENCIA else None,
+            "VELOCIDADE": VELOCIDADE,
+            "STATUS": STATUS,
+            "DATA_TRATATIVA": DATA_TRATATIVA.isoformat() if DATA_TRATATIVA else None,
+            "DOCUMENTO": DOCUMENTO,
+            "JUSTIFICATIVA": JUSTIFICATIVA,
+            "PERCENTUAL": PERCENTUAL,
+            "FEZ_TREINAMENTO": FEZ_TREINAMENTO,
+            "DATA_TREINAMENTO": (
+                DATA_TREINAMENTO.isoformat() if DATA_TREINAMENTO else None
+            ),
+        }
+    ).execute()
 
     st.success("✅ Registro adicionado com sucesso!")
 
 
-
 def FROTA_EXISTE(FROTA):
-    result = supabase.table("EXCESSO VELOCIDADE - FROTA") \
-        .select("FROTA") \
-        .eq("FROTA", FROTA) \
+    result = (
+        supabase.table("EXCESSO VELOCIDADE - FROTA")
+        .select("FROTA")
+        .eq("FROTA", FROTA)
         .execute()
-    
+    )
+
     return len(result.data) > 0
 
+
 def buscar_por_placa(FROTA):
-    result = supabase.table("EXCESSO VELOCIDADE - FROTA") \
-        .select("*") \
-        .eq("FROTA", FROTA) \
+    result = (
+        supabase.table("EXCESSO VELOCIDADE - FROTA")
+        .select("*")
+        .eq("FROTA", FROTA)
         .execute()
+    )
 
     if result.data:
         return result.data[0]
@@ -141,37 +162,37 @@ def atualizar_registro_por_placa(
     JUSTIFICATIVA,
     PERCENTUAL,
     FEZ_TREINAMENTO,
-    DATA_TREINAMENTO
+    DATA_TREINAMENTO,
 ):
-    supabase.table("EXCESSO VELOCIDADE - FROTA").update({
-        "OPERACAO": OPERACAO,
-        "FROTA": FROTA,
-        "MATRICULA": MATRICULA,
-        "NOME_MOTORISTA": NOME_MOTORISTA,
-        "MES": MES,
-        "OCORRENCIA": OCORRENCIA,
-        "ANO_DA_OCORRENCIA": ANO_DA_OCORRENCIA,
-        "DATA_OCORRENCIA": DATA_OCORRENCIA,
-        "VELOCIDADE": VELOCIDADE,
-        "STATUS": STATUS,
-        "DATA_TRATATIVA": DATA_TRATATIVA,
-        "DOCUMENTO": DOCUMENTO,
-        "JUSTIFICATIVA": JUSTIFICATIVA,
-        "PERCENTUAL": PERCENTUAL,
-        "FEZ_TREINAMENTO": FEZ_TREINAMENTO, 
-        "DATA_TREINAMENTO": DATA_TREINAMENTO
-    }).eq("FROTA", FROTA).execute()
+    supabase.table("EXCESSO VELOCIDADE - FROTA").update(
+        {
+            "OPERACAO": OPERACAO,
+            "FROTA": FROTA,
+            "MATRICULA": MATRICULA,
+            "NOME_MOTORISTA": NOME_MOTORISTA,
+            "MES": MES,
+            "OCORRENCIA": OCORRENCIA,
+            "ANO_DA_OCORRENCIA": ANO_DA_OCORRENCIA,
+            "DATA_OCORRENCIA": DATA_OCORRENCIA,
+            "VELOCIDADE": VELOCIDADE,
+            "STATUS": STATUS,
+            "DATA_TRATATIVA": DATA_TRATATIVA,
+            "DOCUMENTO": DOCUMENTO,
+            "JUSTIFICATIVA": JUSTIFICATIVA,
+            "PERCENTUAL": PERCENTUAL,
+            "FEZ_TREINAMENTO": FEZ_TREINAMENTO,
+            "DATA_TREINAMENTO": DATA_TREINAMENTO,
+        }
+    ).eq("FROTA", FROTA).execute()
 
     st.success("✏️ Registro atualizado com sucesso!")
 
 
 def deletar_registro_por_placa(FROTA):
-    supabase.table("EXCESSO VELOCIDADE - FROTA") \
-        .delete() \
-        .eq("FROTA", FROTA) \
-        .execute()
+    supabase.table("EXCESSO VELOCIDADE - FROTA").delete().eq("FROTA", FROTA).execute()
 
     st.success("🗑️ Registro deletado com sucesso!")
+
 
 # ---------------------------------------------------
 # CONFIGURAÇÃO DE PÁGINA
@@ -180,12 +201,13 @@ st.set_page_config(
     page_title="Excesso de Velocidade - FROTA",
     page_icon="📚",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # ---------------------------------------------------
 # CSS
-st.markdown(f"""
+st.markdown(
+    f"""
     <style>
         [data-testid="stAppViewContainer"] {{
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
@@ -258,14 +280,20 @@ st.markdown(f"""
         }}
         
     </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
+
 
 def rodape():
-    st.markdown("""
+    st.markdown(
+        """
         <div class="footer">
             © 2025 <b>Della Volpe</b> | Desenvolvido por <a href="#">Raphael Chiavegati Oliveira</a>
         </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 # ---------------------------------------------------
@@ -277,14 +305,16 @@ if "page" not in st.session_state:
 if "show_table" not in st.session_state:
     st.session_state.show_table = False
 
+
 def go(page):
     st.session_state.page = page
+
 
 # ---------------------------------------------------
 # SIDEBAR
 # ---------------------------------------------------
 with st.sidebar:
-    st.title('EXCESSO VELOCIDADE - FROTA')
+    st.title("EXCESSO VELOCIDADE - FROTA")
     st.markdown("Adicione, edite ou pesquise seus documentos!")
     st.button("➕ Adicionar", on_click=go, args=("add",))
     st.button("✏️ Editar / Excluir ", on_click=go, args=("edit",))
@@ -314,12 +344,12 @@ if st.session_state.page == "add":
     DATA_TREINAMENTO = st.date_input("DATA_TREINAMENTO")
 
     if st.button("Salvar"):
-       
+
         if FROTA_EXISTE(FROTA):
             st.error("⚠️ Esse Frota já existe! Vá na aba EDITAR para alterá-la")
-            
+
         else:
-           adicionar_registro(
+            adicionar_registro(
                 OPERACAO,
                 FROTA,
                 MATRICULA,
@@ -335,9 +365,9 @@ if st.session_state.page == "add":
                 JUSTIFICATIVA,
                 PERCENTUAL,
                 FEZ_TREINAMENTO,
-                DATA_TREINAMENTO
+                DATA_TREINAMENTO,
             )
-           st.success("✅ Registro adicionado com sucesso!")
+            st.success("✅ Registro adicionado com sucesso!")
 
 rodape()
 
@@ -380,7 +410,6 @@ if st.session_state.page == "edit":
 
         frota_original = r["FROTA"]
 
-
         new_operacao = st.text_input("Operação", r["OPERACAO"])
 
         new_frota = st.text_input("Frota", r["FROTA"])
@@ -396,16 +425,14 @@ if st.session_state.page == "edit":
         new_ano_ocorrencia = st.text_input("Ano da Ocorrencia", r["ANO_DA_OCORRENCIA"])
 
         new_data_ocorrencia = st.date_input(
-            "Data da Ocorrencia",
-            value=pd.to_datetime(r["DATA_OCORRENCIA"])
+            "Data da Ocorrencia", value=pd.to_datetime(r["DATA_OCORRENCIA"])
         )
         new_velocidade = st.text_input("Velocidade", r["VELOCIDADE"])
 
         new_status = st.text_input("Status", r["STATUS"])
 
         new_data_tratativa = st.date_input(
-            "Data da Tratativa",
-            value=pd.to_datetime(r["DATA_TRATATIVA"])
+            "Data da Tratativa", value=pd.to_datetime(r["DATA_TRATATIVA"])
         )
 
         new_documento = st.text_input("Documento", r["DOCUMENTO"])
@@ -417,8 +444,7 @@ if st.session_state.page == "edit":
         new_fez_treinamento = st.text_input("Fez Treinamento", r["FEZ_TREINAMENTO"])
 
         new_data_treinamento = st.date_input(
-            "Data do Treinamento",
-            value=pd.to_datetime(r["DATA_TREINAMENTO"])
+            "Data do Treinamento", value=pd.to_datetime(r["DATA_TREINAMENTO"])
         )
 
         col1, col2 = st.columns(2)
@@ -426,12 +452,11 @@ if st.session_state.page == "edit":
         with col1:
             if st.button("Salvar alterações"):
                 atualizar_registro_por_placa(
-                    frota_original,
                     new_operacao,
                     new_frota,
                     new_matricula,
                     new_nome_motorista,
-                    new_mes,    
+                    new_mes,
                     new_ocorrencia,
                     new_ano_ocorrencia,
                     new_data_ocorrencia,
@@ -442,7 +467,7 @@ if st.session_state.page == "edit":
                     new_justificativa,
                     new_percentual,
                     new_fez_treinamento,
-                    new_data_treinamento
+                    new_data_treinamento,
                 )
                 st.success("Registro atualizado com sucesso!")
                 st.session_state.registro_encontrado = None
